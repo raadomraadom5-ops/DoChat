@@ -30,6 +30,60 @@ const authForms = {
 const authButtons = document.querySelectorAll('.auth-toggle');
 const closeButton = document.querySelector('.close-modal');
 
+function formatCompactNumber(value) {
+  if (value >= 1000000) {
+    const formatted = (value / 1000000).toFixed(value >= 10000000 ? 0 : 1).replace(/\.0$/, '');
+    return `${formatted}M+`;
+  }
+
+  if (value >= 1000) {
+    const formatted = (value / 1000).toFixed(value >= 10000 ? 0 : 1).replace(/\.0$/, '');
+    return `${formatted}k+`;
+  }
+
+  return `${Math.max(1, value)}+`;
+}
+
+function getStoredUserName() {
+  return localStorage.getItem('dochatUser') || '';
+}
+
+function getOnlineMemberCount() {
+  const stored = Number(localStorage.getItem('dochatOnlineMembers') || 0);
+  const baseCount = mockMembers.filter((member) => member.status !== 'offline').length;
+  const userBoost = getStoredUserName() ? 1 : 0;
+
+  return stored > 0 ? stored : baseCount + userBoost;
+}
+
+function updateLandingStats() {
+  const activeRoomsEl = document.getElementById('activeRoomsStat');
+  const messagesSentEl = document.getElementById('messagesSentStat');
+  const communityAccessEl = document.getElementById('communityAccessStat');
+
+  if (!activeRoomsEl && !messagesSentEl && !communityAccessEl) return;
+
+  const userName = getStoredUserName();
+  const storedRoomNames = JSON.parse(localStorage.getItem('dochatRooms') || '[]');
+  const roomCount = Array.isArray(storedRoomNames) && storedRoomNames.length ? storedRoomNames.length : mockServers.length;
+  const createdRooms = Number(localStorage.getItem('dochatCreatedRooms') || roomCount);
+  const onlineMembers = getOnlineMemberCount();
+  const activeRooms = Math.max(roomCount + (userName ? 2 : 0), createdRooms + (userName ? 2 : 0), 10);
+  const messageValue = Math.max(Number(localStorage.getItem('dochatMessagesSent') || 1200000), 1200000);
+
+  if (activeRoomsEl) {
+    activeRoomsEl.textContent = formatCompactNumber(activeRooms);
+  }
+
+  if (messagesSentEl) {
+    messagesSentEl.textContent = formatCompactNumber(userName ? messageValue + 4200 : messageValue);
+  }
+
+  if (communityAccessEl) {
+    communityAccessEl.textContent = userName ? `${Math.max(onlineMembers, 1)} online` : '24/7';
+  }
+}
+
 function openAuth(mode = 'login') {
   if (!modal) return;
   modal.classList.add('show');
@@ -54,7 +108,9 @@ function setAuthMode(mode) {
     form.classList.toggle('active', isActive);
   });
 
-  authTitle.textContent = mode === 'login' ? 'Welcome back' : 'Create your account';
+  if (authTitle) {
+    authTitle.textContent = mode === 'login' ? 'Welcome back' : 'Create your account';
+  }
 }
 
 function handleAuthSubmit(event) {
@@ -67,6 +123,8 @@ function handleAuthSubmit(event) {
 
   if (username) {
     localStorage.setItem('dochatUser', username);
+    localStorage.setItem('dochatOnlineMembers', String(getOnlineMemberCount() + 1));
+    localStorage.setItem('dochatCreatedRooms', String(Math.max(4, Number(localStorage.getItem('dochatCreatedRooms') || 4) + (isLogin ? 0 : 1))));
   }
 
   const loginButton = document.querySelector('.auth-toggle[data-mode="login"]');
@@ -75,6 +133,7 @@ function handleAuthSubmit(event) {
   if (loginButton) loginButton.textContent = isLogin ? 'Logged in' : 'Log in';
   if (signupButton) signupButton.textContent = isLogin ? 'Sign up' : 'Signed up';
 
+  updateLandingStats();
   closeAuth();
   form.reset();
 }
@@ -104,6 +163,20 @@ const activeChannel = document.getElementById('activeChannel');
 const memberList = document.getElementById('memberList');
 const composerForm = document.getElementById('composerForm');
 const messageInput = document.getElementById('messageInput');
+
+function syncRoomAndMessageCounts() {
+  const savedRooms = JSON.parse(localStorage.getItem('dochatRooms') || '[]');
+  const currentRooms = Array.isArray(savedRooms) && savedRooms.length ? savedRooms : mockServers.map((server) => server.name);
+  localStorage.setItem('dochatRooms', JSON.stringify(currentRooms));
+
+  if (!localStorage.getItem('dochatMessagesSent')) {
+    localStorage.setItem('dochatMessagesSent', '1200000');
+  }
+
+  if (!localStorage.getItem('dochatCreatedRooms')) {
+    localStorage.setItem('dochatCreatedRooms', String(currentRooms.length));
+  }
+}
 
 function renderServers() {
   if (!serverList) return;
@@ -215,6 +288,7 @@ function renderMessages() {
 
 function render() {
   renderServers();
+  updateLandingStats();
 
   if (!channelList) return;
 
@@ -241,6 +315,10 @@ if (composerForm) {
     if (!text) return;
 
     const username = localStorage.getItem('dochatUser') || 'You';
+    const existingTotal = Number(localStorage.getItem('dochatMessagesSent') || 1200000);
+    localStorage.setItem('dochatMessagesSent', String(existingTotal + 1));
+    localStorage.setItem('dochatOnlineMembers', String(Math.max(getOnlineMemberCount(), 1)));
+
     const html = `
       <article class="message-item outgoing">
         <div class="message-avatar user">${username.charAt(0).toUpperCase()}</div>
@@ -258,10 +336,17 @@ if (composerForm) {
     messagesEl.insertAdjacentHTML('beforeend', html);
     messageInput.value = '';
     messagesEl.scrollTop = messagesEl.scrollHeight;
+    updateLandingStats();
   });
 }
 
 if (authForms.login) authForms.login.addEventListener('submit', handleAuthSubmit);
 if (authForms.signup) authForms.signup.addEventListener('submit', handleAuthSubmit);
 
+syncRoomAndMessageCounts();
+updateLandingStats();
 render();
+
+if (window.location.pathname === '/' || window.location.pathname.endsWith('/index.html')) {
+  updateLandingStats();
+}

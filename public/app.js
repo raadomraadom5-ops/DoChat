@@ -28,6 +28,60 @@ const memberList = document.getElementById('memberList');
 const composerForm = document.getElementById('composerForm');
 const messageInput = document.getElementById('messageInput');
 
+function formatCompactNumber(value) {
+  if (value >= 1000000) {
+    const formatted = (value / 1000000).toFixed(value >= 10000000 ? 0 : 1).replace(/\.0$/, '');
+    return `${formatted}M+`;
+  }
+
+  if (value >= 1000) {
+    const formatted = (value / 1000).toFixed(value >= 10000 ? 0 : 1).replace(/\.0$/, '');
+    return `${formatted}k+`;
+  }
+
+  return `${Math.max(1, value)}+`;
+}
+
+function getStoredUserName() {
+  return localStorage.getItem('dochatUser') || '';
+}
+
+function getOnlineMemberCount() {
+  const stored = Number(localStorage.getItem('dochatOnlineMembers') || 0);
+  const baseCount = mockMembers.filter((member) => member.status !== 'offline').length;
+  const userBoost = getStoredUserName() ? 1 : 0;
+
+  return stored > 0 ? stored : baseCount + userBoost;
+}
+
+function updateLandingStats() {
+  const activeRoomsEl = document.getElementById('activeRoomsStat');
+  const messagesSentEl = document.getElementById('messagesSentStat');
+  const communityAccessEl = document.getElementById('communityAccessStat');
+
+  if (!activeRoomsEl && !messagesSentEl && !communityAccessEl) return;
+
+  const userName = getStoredUserName();
+  const storedRoomNames = JSON.parse(localStorage.getItem('dochatRooms') || '[]');
+  const roomCount = Array.isArray(storedRoomNames) && storedRoomNames.length ? storedRoomNames.length : mockServers.length;
+  const createdRooms = Number(localStorage.getItem('dochatCreatedRooms') || roomCount);
+  const onlineMembers = getOnlineMemberCount();
+  const activeRooms = Math.max(roomCount + (userName ? 2 : 0), createdRooms + (userName ? 2 : 0), 10);
+  const messageValue = Math.max(Number(localStorage.getItem('dochatMessagesSent') || 1200000), 1200000);
+
+  if (activeRoomsEl) {
+    activeRoomsEl.textContent = formatCompactNumber(activeRooms);
+  }
+
+  if (messagesSentEl) {
+    messagesSentEl.textContent = formatCompactNumber(userName ? messageValue + 4200 : messageValue);
+  }
+
+  if (communityAccessEl) {
+    communityAccessEl.textContent = userName ? `${Math.max(onlineMembers, 1)} online` : '24/7';
+  }
+}
+
 function renderServers() {
   serverList.innerHTML = mockServers
     .map(
@@ -130,6 +184,7 @@ function renderMessages() {
 
 function render() {
   renderServers();
+  updateLandingStats();
   fetch(`/api/channels?server=${state.selectedServer}`)
     .then((res) => res.json())
     .then((channels) => {
@@ -150,24 +205,21 @@ composerForm.addEventListener('submit', (event) => {
 
   if (!text) return;
 
-  const newMessage = {
-    user: 'You',
-    tag: 'creator',
-    time: 'now',
-    text
-  };
+  const username = localStorage.getItem('dochatUser') || 'You';
+  const existingTotal = Number(localStorage.getItem('dochatMessagesSent') || 1200000);
+  localStorage.setItem('dochatMessagesSent', String(existingTotal + 1));
+  localStorage.setItem('dochatOnlineMembers', String(Math.max(getOnlineMemberCount(), 1)));
 
-  const currentMessages = [...messagesEl.querySelectorAll('.message-item')].map((item) => item.outerHTML);
   const html = `
     <article class="message-item outgoing">
-      <div class="message-avatar user">Y</div>
+      <div class="message-avatar user">${username.charAt(0).toUpperCase()}</div>
       <div class="message-content">
         <div class="message-header">
-          <strong>${newMessage.user}</strong>
-          <span>${newMessage.tag}</span>
-          <time>${newMessage.time}</time>
+          <strong>${username}</strong>
+          <span>member</span>
+          <time>now</time>
         </div>
-        <p>${newMessage.text}</p>
+        <p>${text}</p>
       </div>
     </article>
   `;
@@ -175,6 +227,16 @@ composerForm.addEventListener('submit', (event) => {
   messagesEl.insertAdjacentHTML('beforeend', html);
   messageInput.value = '';
   messagesEl.scrollTop = messagesEl.scrollHeight;
+  updateLandingStats();
 });
 
+if (!localStorage.getItem('dochatMessagesSent')) {
+  localStorage.setItem('dochatMessagesSent', '1200000');
+}
+
+if (!localStorage.getItem('dochatCreatedRooms')) {
+  localStorage.setItem('dochatCreatedRooms', String(mockServers.length));
+}
+
+updateLandingStats();
 render();
