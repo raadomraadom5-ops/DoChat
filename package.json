@@ -1,0 +1,26 @@
+{
+  "name": "dochat",
+  "version": "1.0.0",
+  "description": "DoChat — a Discord-inspired chat app prototype with premium-style features.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "discord",
+    "chat",
+    "social",
+    "express",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
