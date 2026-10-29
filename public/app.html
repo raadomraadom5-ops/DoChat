@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body class="app-shell">
     <aside class="servers-panel">
@@ -29,13 +29,13 @@
 
     <main class="chat-panel">
       <header class="chat-header">
-        <div>
+        <div class="chat-header-main">
           <span class="channel-pill">#</span>
           <h3 id="activeChannel">general</h3>
         </div>
         <div class="chat-header-actions">
-          <button class="mini-button">Threads</button>
-          <button class="mini-button">Invite</button>
+          <button class="mini-button auth-toggle" data-mode="login">Log in</button>
+          <button class="mini-button auth-toggle" data-mode="signup">Sign up</button>
         </div>
       </header>
 
@@ -53,6 +53,50 @@
       <div class="member-list" id="memberList"></div>
     </aside>
 
-    <script src="/app.js"></script>
+    <div class="auth-modal" id="authModal" aria-hidden="true">
+      <div class="auth-panel">
+        <button class="close-modal" aria-label="Close auth modal">×</button>
+
+        <div class="auth-header">
+          <div class="brand-mark">D</div>
+          <h2 id="authTitle">Welcome back</h2>
+        </div>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth-tab="login">Log in</button>
+          <button class="auth-tab" data-auth-tab="signup">Sign up</button>
+        </div>
+
+        <form id="loginForm" class="auth-form active">
+          <label>
+            Email
+            <input type="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Password
+            <input type="password" placeholder="••••••••" required />
+          </label>
+          <button type="submit" class="primary-button full">Log in</button>
+        </form>
+
+        <form id="signupForm" class="auth-form">
+          <label>
+            Display name
+            <input type="text" placeholder="Your community name" required />
+          </label>
+          <label>
+            Email
+            <input type="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Password
+            <input type="password" placeholder="Create a password" required />
+          </label>
+          <button type="submit" class="primary-button full">Create account</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
   </body>
 </html>
