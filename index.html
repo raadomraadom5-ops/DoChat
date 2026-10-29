@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DoChat | All your communities in one place</title>
+    <meta
+      name="description"
+      content="DoChat is a modern Discord-inspired community platform with login and signup flows."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="landing-page">
+    <div class="bg-orb orb-one"></div>
+    <div class="bg-orb orb-two"></div>
+
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-mark">D</div>
+        <div class="brand-name">DoChat</div>
+      </div>
+
+      <nav class="topnav">
+        <a href="#features">Features</a>
+        <a href="#community">Community</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#download">Download</a>
+      </nav>
+
+      <div class="topbar-actions">
+        <button class="ghost-button auth-toggle" data-mode="login">Log in</button>
+        <button class="primary-button auth-toggle" data-mode="signup">Sign up</button>
+      </div>
+    </header>
+
+    <main class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">Built for communities that vibe together</div>
+        <h1>Talk, hang out, and grow your space.</h1>
+        <p>
+          DoChat gives your community a place to chat, share, plan, and create without the clutter. Fast,
+          social, and beautifully organized.
+        </p>
+
+        <div class="cta-row">
+          <button class="primary-button auth-toggle" data-mode="signup">Create account</button>
+          <button class="secondary-button auth-toggle" data-mode="login">Open demo</button>
+        </div>
+
+        <div class="stats-row">
+          <div>
+            <strong>10k+</strong>
+            <span>active rooms</span>
+          </div>
+          <div>
+            <strong>1.2M</strong>
+            <span>messages sent</span>
+          </div>
+          <div>
+            <strong>24/7</strong>
+            <span>community access</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="chat-window">
+          <div class="window-header">
+            <div class="window-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="window-title">#community-lounge</div>
+          </div>
+
+          <div class="message-message incoming">
+            <div class="avatar green">A</div>
+            <div class="bubble">
+              <div class="userline">Ari <span>9:48 PM</span></div>
+              <p>The new launch is looking amazing. We are ready to open the doors.</p>
+            </div>
+          </div>
+
+          <div class="message-message outgoing">
+            <div class="bubble">
+              <div class="userline">You <span>9:49 PM</span></div>
+              <p>Perfect. Let’s keep the vibe warm, active, and community-first.</p>
+            </div>
+          </div>
+
+          <div class="message-message incoming">
+            <div class="avatar purple">N</div>
+            <div class="bubble">
+              <div class="userline">Nina <span>9:50 PM</span></div>
+              <p>DoChat is shaping up to feel premium without being complicated.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <section class="feature-grid" id="features">
+      <article class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <h3>Instant voice and chat</h3>
+        <p>Jump into channels, gather quickly, and keep the conversation flowing with minimal friction.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon">🎨</span>
+        <h3>Custom communities</h3>
+        <p>Organize spaces, roles, and channels around whatever your group cares about most.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon">✨</span>
+        <h3>Premium-style perks</h3>
+        <p>Give members an elevated experience through perks, badges, and community upgrades.</p>
+      </article>
+    </section>
+
+    <section class="pricing-panel" id="pricing">
+      <div class="panel-copy">
+        <span class="eyebrow alt">Simple pricing</span>
+        <h2>Make your community feel premium by default.</h2>
+      </div>
+
+      <div class="pricing-card">
+        <div class="plan-header">DoChat Plus</div>
+        <div class="plan-price">$0<span>/month</span></div>
+        <ul>
+          <li>Unlimited channels</li>
+          <li>Custom role badges</li>
+          <li>Boosted upload support</li>
+          <li>Community themes</li>
+        </ul>
+        <button class="primary-button full auth-toggle" data-mode="signup">Get started</button>
+      </div>
+    </section>
+
+    <div class="auth-modal" id="authModal" aria-hidden="true">
+      <div class="auth-panel">
+        <button class="close-modal" aria-label="Close auth modal">×</button>
+
+        <div class="auth-header">
+          <div class="brand-mark">D</div>
+          <h2 id="authTitle">Welcome back</h2>
+        </div>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth-tab="login">Log in</button>
+          <button class="auth-tab" data-auth-tab="signup">Sign up</button>
+        </div>
+
+        <form id="loginForm" class="auth-form active">
+          <label>
+            Email
+            <input type="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Password
+            <input type="password" placeholder="••••••••" required />
+          </label>
+          <button type="submit" class="primary-button full">Log in</button>
+        </form>
+
+        <form id="signupForm" class="auth-form">
+          <label>
+            Display name
+            <input type="text" placeholder="Your community name" required />
+          </label>
+          <label>
+            Email
+            <input type="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Password
+            <input type="password" placeholder="Create a password" required />
+          </label>
+          <button type="submit" class="primary-button full">Create account</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

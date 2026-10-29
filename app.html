@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DoChat App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="app-shell">
+    <aside class="servers-panel">
+      <div class="server-stack" id="serverList"></div>
+      <div class="server-add">+</div>
+    </aside>
+
+    <aside class="channels-panel">
+      <div class="panel-header">
+        <h2>Community</h2>
+        <button class="mini-button">⋯</button>
+      </div>
+      <div class="channel-search">Search channels</div>
+      <div class="channel-list" id="channelList"></div>
+    </aside>
+
+    <main class="chat-panel">
+      <header class="chat-header">
+        <div class="chat-header-main">
+          <span class="channel-pill">#</span>
+          <h3 id="activeChannel">general</h3>
+        </div>
+        <div class="chat-header-actions">
+          <button class="mini-button auth-toggle" data-mode="login">Log in</button>
+          <button class="mini-button auth-toggle" data-mode="signup">Sign up</button>
+        </div>
+      </header>
+
+      <section class="messages" id="messages"></section>
+
+      <form class="composer" id="composerForm">
+        <button type="button" class="mini-button plus">+</button>
+        <input type="text" id="messageInput" placeholder="Message #general" />
+        <button type="submit" class="primary-button small">Send</button>
+      </form>
+    </main>
+
+    <aside class="members-panel">
+      <div class="members-header">Members</div>
+      <div class="member-list" id="memberList"></div>
+    </aside>
+
+    <div class="auth-modal" id="authModal" aria-hidden="true">
+      <div class="auth-panel">
+        <button class="close-modal" aria-label="Close auth modal">×</button>
+
+        <div class="auth-header">
+          <div class="brand-mark">D</div>
+          <h2 id="authTitle">Welcome back</h2>
+        </div>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth-tab="login">Log in</button>
+          <button class="auth-tab" data-auth-tab="signup">Sign up</button>
+        </div>
+
+        <form id="loginForm" class="auth-form active">
+          <label>
+            Email
+            <input type="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Password
+            <input type="password" placeholder="••••••••" required />
+          </label>
+          <button type="submit" class="primary-button full">Log in</button>
+        </form>
+
+        <form id="signupForm" class="auth-form">
+          <label>
+            Display name
+            <input type="text" placeholder="Your community name" required />
+          </label>
+          <label>
+            Email
+            <input type="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Password
+            <input type="password" placeholder="Create a password" required />
+          </label>
+          <button type="submit" class="primary-button full">Create account</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
