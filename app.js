@@ -112,7 +112,7 @@ function updateLandingStats() {
 function openAuth(mode = 'login') {
   if (!modal) return;
   if (isLoggedIn()) {
-    window.location.href = './app.html';
+    window.location.href = './app/';
     return;
   }
 
@@ -162,13 +162,13 @@ function handleAuthSubmit(event) {
   closeAuth();
   form.reset();
 
-  window.location.href = './app.html';
+  window.location.href = './app/';
 }
 
 authButtons.forEach((button) => {
-  button.addEventListener('click', () => { 
+  button.addEventListener('click', () => {
     if (button.dataset.loggedIn === 'true') {
-      window.location.href = './app.html';
+      window.location.href = './app/';
       return;
     }
     openAuth(button.dataset.mode || 'login');
@@ -380,9 +380,9 @@ syncRoomAndMessageCounts();
 updateAuthButtons();
 updateLandingStats();
 
-if (window.location.pathname.endsWith('/app.html') || window.location.pathname.endsWith('/app')) {
+if (window.location.pathname.includes('/app/') || window.location.pathname.endsWith('/app/') || window.location.pathname.endsWith('/app') || window.location.pathname.endsWith('/app/index.html')) {
   if (!isLoggedIn()) {
-    window.location.href = './index.html';
+    window.location.href = '../index.html';
   }
 }
 

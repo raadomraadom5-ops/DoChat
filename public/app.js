@@ -247,9 +247,9 @@ if (!localStorage.getItem('dochatCreatedRooms')) {
   localStorage.setItem('dochatCreatedRooms', String(mockServers.length));
 }
 
-if (window.location.pathname.endsWith('/app.html') || window.location.pathname.endsWith('/app')) {
+if (window.location.pathname.includes('/app/') || window.location.pathname.endsWith('/app/') || window.location.pathname.endsWith('/app') || window.location.pathname.endsWith('/app/index.html')) {
   if (!isLoggedIn()) {
-    window.location.href = './index.html';
+    window.location.href = '../index.html';
   }
 }
 
