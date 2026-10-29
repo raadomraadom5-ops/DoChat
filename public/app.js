@@ -46,6 +46,15 @@ function getStoredUserName() {
   return localStorage.getItem('dochatUser') || '';
 }
 
+function setSessionUser(username) {
+  localStorage.setItem('dochatUser', username);
+  localStorage.setItem('dochatLoggedIn', 'true');
+}
+
+function isLoggedIn() {
+  return Boolean(localStorage.getItem('dochatLoggedIn') || getStoredUserName());
+}
+
 function getOnlineMemberCount() {
   const stored = Number(localStorage.getItem('dochatOnlineMembers') || 0);
   const baseCount = mockMembers.filter((member) => member.status !== 'offline').length;
@@ -236,6 +245,12 @@ if (!localStorage.getItem('dochatMessagesSent')) {
 
 if (!localStorage.getItem('dochatCreatedRooms')) {
   localStorage.setItem('dochatCreatedRooms', String(mockServers.length));
+}
+
+if (window.location.pathname.endsWith('/app.html') || window.location.pathname.endsWith('/app')) {
+  if (!isLoggedIn()) {
+    window.location.href = './index.html';
+  }
 }
 
 updateLandingStats();

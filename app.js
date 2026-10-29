@@ -48,6 +48,31 @@ function getStoredUserName() {
   return localStorage.getItem('dochatUser') || '';
 }
 
+function setSessionUser(username) {
+  localStorage.setItem('dochatUser', username);
+  localStorage.setItem('dochatLoggedIn', 'true');
+}
+
+function isLoggedIn() {
+  return Boolean(localStorage.getItem('dochatLoggedIn') || getStoredUserName());
+}
+
+function updateAuthButtons() {
+  const user = getStoredUserName();
+  const buttons = document.querySelectorAll('.auth-toggle');
+
+  buttons.forEach((button) => {
+    const mode = button.dataset.mode || 'login';
+    if (user) {
+      button.textContent = mode === 'login' ? 'Open app' : 'Continue';
+      button.setAttribute('data-logged-in', 'true');
+    } else {
+      button.textContent = mode === 'login' ? 'Log in' : 'Sign up';
+      button.removeAttribute('data-logged-in');
+    }
+  });
+}
+
 function getOnlineMemberCount() {
   const stored = Number(localStorage.getItem('dochatOnlineMembers') || 0);
   const baseCount = mockMembers.filter((member) => member.status !== 'offline').length;
@@ -86,6 +111,11 @@ function updateLandingStats() {
 
 function openAuth(mode = 'login') {
   if (!modal) return;
+  if (isLoggedIn()) {
+    window.location.href = './app.html';
+    return;
+  }
+
   modal.classList.add('show');
   modal.setAttribute('aria-hidden', 'false');
   setAuthMode(mode);
@@ -121,25 +151,28 @@ function handleAuthSubmit(event) {
   const emailInput = form.querySelector('input[type="email"]');
   const username = nameInput ? nameInput.value.trim() : (emailInput ? emailInput.value.split('@')[0] : 'DoChat User');
 
-  if (username) {
-    localStorage.setItem('dochatUser', username);
-    localStorage.setItem('dochatOnlineMembers', String(getOnlineMemberCount() + 1));
-    localStorage.setItem('dochatCreatedRooms', String(Math.max(4, Number(localStorage.getItem('dochatCreatedRooms') || 4) + (isLogin ? 0 : 1))));
-  }
+  if (!username) return;
 
-  const loginButton = document.querySelector('.auth-toggle[data-mode="login"]');
-  const signupButton = document.querySelector('.auth-toggle[data-mode="signup"]');
+  setSessionUser(username);
+  localStorage.setItem('dochatOnlineMembers', String(getOnlineMemberCount() + 1));
+  localStorage.setItem('dochatCreatedRooms', String(Math.max(4, Number(localStorage.getItem('dochatCreatedRooms') || 4) + (isLogin ? 0 : 1))));
 
-  if (loginButton) loginButton.textContent = isLogin ? 'Logged in' : 'Log in';
-  if (signupButton) signupButton.textContent = isLogin ? 'Sign up' : 'Signed up';
-
+  updateAuthButtons();
   updateLandingStats();
   closeAuth();
   form.reset();
+
+  window.location.href = './app.html';
 }
 
 authButtons.forEach((button) => {
-  button.addEventListener('click', () => openAuth(button.dataset.mode || 'login'));
+  button.addEventListener('click', () => { 
+    if (button.dataset.loggedIn === 'true') {
+      window.location.href = './app.html';
+      return;
+    }
+    openAuth(button.dataset.mode || 'login');
+  });
 });
 
 authTabs.forEach((tab) => {
@@ -344,9 +377,13 @@ if (authForms.login) authForms.login.addEventListener('submit', handleAuthSubmit
 if (authForms.signup) authForms.signup.addEventListener('submit', handleAuthSubmit);
 
 syncRoomAndMessageCounts();
+updateAuthButtons();
 updateLandingStats();
-render();
 
-if (window.location.pathname === '/' || window.location.pathname.endsWith('/index.html')) {
-  updateLandingStats();
+if (window.location.pathname.endsWith('/app.html') || window.location.pathname.endsWith('/app')) {
+  if (!isLoggedIn()) {
+    window.location.href = './index.html';
+  }
 }
+
+render();
